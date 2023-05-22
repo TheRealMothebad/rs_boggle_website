@@ -22,4 +22,19 @@ fn handle_connection(mut stream: TcpStream) {
         .collect();
 
     println!("Request: {:#?}", http_request);
+
+    let status_line = "HTTP/1.1 200 OK";
+    
+    let origin = http_request.get(1).expect("bad");
+    let other_stuff = format!("Access-Control-Allow-Origin: * \r\n
+        Access-Control-Allow-Origin: {origin} \r\n
+        Access-Control-Allow-Origin: null");
+
+    let contents = "{\"name\":\"John\", \"age\":30, \"car\":null}";
+    let length = contents.len();
+
+    let response =
+        format!("{status_line}\r\n{other_stuff}\r\nContent-Length: {length}\r\n\r\n{contents}");
+
+    stream.write_all(response.as_bytes()).unwrap();
 }
