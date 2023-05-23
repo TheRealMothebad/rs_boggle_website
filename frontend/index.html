@@ -3,13 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css">
     <title>Bee Receiver</title>
   </head>
   <body>
     <h1>Welcome to the Internet!</h1>
-    <p>Press the button to receive bees :)</p>
+    <p>Press the button to receive bees (or data) :)</p>
+
+    <table>
+      <tr>
+        <td><input name="0" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="1" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="2" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="3" type="text" maxlength="1" class="board_square"/></td>
+      </tr>
+      <tr>
+        <td><input name="4" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="5" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="6" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="7" type="text" maxlength="1" class="board_square"/></td>
+      </tr>
+      <tr>
+        <td><input name="8" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="9" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="10" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="11" type="text" maxlength="1" class="board_square"/></td>
+      </tr>
+      <tr>
+        <td><input name="12" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="13" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="14" type="text" maxlength="1" class="board_square"/></td>
+        <td><input name="15" type="text" maxlength="1" class="board_square"/></td>
+      </tr>
+    </table>
+    
+
     <button onclick="getBees()">get bees</button>
-    <button onclick="addData()">add data</button>
+    <button onclick="sendBoard()">Scrape board</button>
 
     <div id="bee_div"></div>
 
@@ -19,10 +49,19 @@
         document.getElementById("bee_div").innerHTML += "<p>bees</p>";
       }
 
+      function gatherBoard() {
+        
+      }
+
       const xhr = new XMLHttpRequest();
 
-      function addData() {
-        xhr.open("GET", "http://127.0.0.1:7878");
+      function sendBoard() {
+        boardContents = ""
+        for(i = 0; i < 16; i++) {
+          boardContents += document.getElementsByClassName("board_square")[i].value;
+        }
+
+        xhr.open("POST", "http://127.0.0.1:7878/" + boardContents);
         xhr.send();
         xhr.responseType = "text";
         xhr.onload = () => {
