@@ -3,23 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Bee Receiver</title>
   </head>
   <body>
-    <h1>Welcome from the Internet!</h1>
+    <h1>Welcome to the Internet!</h1>
+    <p>Press the button to receive bees :)</p>
+    <button onclick="getBees()">get bees</button>
+    <button onclick="addData()">add data</button>
+
+    <div id="bee_div"></div>
+
     <script>
-        const xhr = new XMLHttpRequest();
+
+      function getBees() {
+        document.getElementById("bee_div").innerHTML += "<p>bees</p>";
+      }
+
+      const xhr = new XMLHttpRequest();
+
+      function addData() {
         xhr.open("GET", "http://127.0.0.1:7878");
         xhr.send();
-        xhr.responseType = "json";
+        xhr.responseType = "text";
         xhr.onload = () => {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 const data = xhr.response;
-                console.log(data);
+                document.getElementById("bee_div").innerHTML += "<p>" + data + "</p>";
             } else {
                 console.log(`Error: ${xhr.status}`);
             }
         };
+        
+      }
       </script>
   </body>
 </html>
