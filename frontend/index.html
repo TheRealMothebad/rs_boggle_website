@@ -6,9 +6,10 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <title>Bee Receiver</title>
   </head>
+  
   <body>
     <h1>Welcome to the Internet!</h1>
-    <p>Press the button to receive bees (or data) :)</p>
+    <p>Press the button to receive da data :)</p>
 
     <table>
       <tr>
@@ -36,21 +37,21 @@
         <td><input name="15" type="text" maxlength="1" class="board_square"/></td>
       </tr>
     </table>
-    
 
-    <button onclick="getBees()">get bees</button>
     <button onclick="sendBoard()">Scrape board</button>
 
-    <div id="bee_div"></div>
+    <div id="result_div"></div>
 
     <script>
 
-      function getBees() {
-        document.getElementById("bee_div").innerHTML += "<p>bees</p>";
+      function filterField(e) {
+        let t = e.target;
+        let badValues = /[^a-z]/gi;
+        t.value = t.value.replace(badValues, '');
       }
-
-      function gatherBoard() {
-        
+      
+      for(i = 0; i < 16; i++) {
+        document.getElementsByClassName("board_square")[i].addEventListener('input', filterField);
       }
 
       const xhr = new XMLHttpRequest();
@@ -65,15 +66,15 @@
         xhr.send();
         xhr.responseType = "text";
         xhr.onload = () => {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                const data = xhr.response;
-                document.getElementById("bee_div").innerHTML += "<p>" + data + "</p>";
-            } else {
-                console.log(`Error: ${xhr.status}`);
-            }
+          if (xhr.readyState == 4 && xhr.status == 200) {
+            const data = xhr.response;
+            document.getElementById("result_div").innerHTML += "<p>" + data + "</p>";
+          } else {
+            console.log(`Error: ${xhr.status}`);
+          }
         };
-        
       }
-      </script>
+
+    </script>
   </body>
 </html>
