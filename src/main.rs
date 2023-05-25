@@ -3,13 +3,13 @@ use std::{
     net::{TcpListener, TcpStream}, usize,
 };
 use regex::Regex;
-use tree_builder::Node;
+use tree_builder::{Node, char_to_usize};
 
 mod tree_builder;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
-    let mut tree: Vec<tree_builder::Node> = tree_builder::build_tree();
+    let tree: Vec<tree_builder::Node> = tree_builder::build_tree();
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
@@ -29,7 +29,7 @@ fn handle_connection(mut stream: TcpStream, tree: &Vec<tree_builder::Node>) {
 
     let status_line: &str = "HTTP/1.1 200 OK";
     
-    let origin: &str = match http_request.get(1) {
+    let _origin: &str = match http_request.get(1) {
         Some(host) => &host[6..],
         _ => stringify!("*")
     };
@@ -38,11 +38,11 @@ fn handle_connection(mut stream: TcpStream, tree: &Vec<tree_builder::Node>) {
 
     let re = Regex::new(r"[^a-z]gi").unwrap();
 
-    let contents: &str = match http_request.get(0) {
+    let contents = match http_request.get(0) {
         Some(post_rq) 
             if (post_rq.len() == 31 && !re.is_match(&post_rq[6..22])) => scrape_board(&post_rq[6..22], tree),
-        Some(_) => "Error: Incomplete or Invalid Table",
-        _ => "Error: Generic"
+        Some(_) => "Error: Incomplete or Invalid Table".to_string(),
+        _ => "Error: Generic".to_string()
     };
 
     let length = contents.len();
@@ -54,13 +54,29 @@ fn handle_connection(mut stream: TcpStream, tree: &Vec<tree_builder::Node>) {
     stream.write_all(response.as_bytes()).unwrap();
 }
 
-//board is guaranteed to be 16 characters and only containing a-z or A-Z
-fn scrape_board<'a>(board: &str, tree: &Vec<Node>) -> &'a str{
-   "wow, response"
-}
-
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 struct Position(i8, i8);
+
+//board is guaranteed to be 16 characters and only containing a-z or A-Z
+fn scrape_board<'a>(board_string: &str, tree: &Vec<Node>) -> String{
+    let mut board: [char; 16] = ['a'; 16];
+    let board_vec: Vec<char> = board_string.chars().collect();
+    for i in 0..16 {
+        board[i] = *board_vec.get(i).unwrap()
+    }
+
+    let mut found_words: Vec<String> = Vec::new();
+    for x in 0..4 {
+        for y in 0..4 {
+            let prev: Vec<Position> = Vec::new();
+            let letter = board[y * 4 + x].to_string();
+            scraper_worm(Position(x as i8, y as i8), letter,
+             &board, &prev, &mut found_words, tree, char_to_usize(board[y * 4 + x]));
+        }
+    }
+
+    found_words.join("\n")
+}
 
 fn scraper_worm(curr_pos: Position, word_progress: String, board: &[char; 16],
     position_progress: &Vec<Position>, found_words: &mut Vec<String>, tree: &Vec<Node>, tree_node: usize) {
