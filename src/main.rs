@@ -103,7 +103,7 @@ fn scraper_worm(curr_pos: Position, word_progress: String, board: &[char; 16],
                             found_words.push(new_word_progress.clone());
                         }
                         scraper_worm(
-                            new_position, new_word_progress, &board, &position_progress,
+                            new_position, new_word_progress, &board, &prev,
                             found_words, tree, next_node_index
                         );
                     }
